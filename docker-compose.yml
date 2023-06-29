@@ -1,0 +1,31 @@
+services:
+  database:
+    image: postgres:15.3-alpine3.18
+    container_name: maizum_db
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+  api:
+    container_name: maizum_back
+    build: .
+    ports:
+      - ${API_PORT}:${API_PORT}
+    volumes:
+      - .:/home/maizum-back
+      - /home/maizum-back/node_modules
+    depends_on:
+      - database
+    env_file:
+      - .env
+    links:
+      - database
+
+volumes:
+  database:
+    driver: local
