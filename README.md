@@ -1,4 +1,5 @@
-# maizum-back
+# Maizum-back
+
 This project aims to serve as a study foundation for building the backend of a todo list application using Nest.js
 
 ## Envinronment variables
@@ -20,5 +21,5 @@ Run the container
 ```bash
   docker compose up --build
 ```
-(`--build` is only necessary in the first run in order to build the project)
 
+(`--build` is only necessary in the first run in order to build the project)
