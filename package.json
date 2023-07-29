@@ -64,19 +64,22 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "./",
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "./src/**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
-      "<rootDir>/config/",
-      "<rootDir>/main.ts",
+      "<rootDir>/src/config/",
+      "<rootDir>/src/main.ts",
       "\\.module\\.ts$"
     ]
   }
