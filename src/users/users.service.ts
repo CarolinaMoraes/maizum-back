@@ -35,7 +35,7 @@ export class UsersService {
 
   async create(userData: CreateUserInput): Promise<User> {
     try {
-      const user = await this.userRepository.create(userData);
+      const user = await this.userRepository.create({ ...userData, lists: [] });
       const userSaved = await this.userRepository.save(user);
 
       return userSaved;

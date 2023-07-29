@@ -1,5 +1,7 @@
 import { Field, HideField, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Item } from 'src/items-list/item.entity';
+import { ItemsList } from 'src/items-list/items-list.entity';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -23,4 +25,12 @@ export class User {
   @HideField()
   @Column()
   password: string;
+
+  @OneToMany(() => ItemsList, (itemsList) => itemsList.owner)
+  @Field((type) => [ItemsList], { nullable: true })
+  lists?: ItemsList[];
+
+  @OneToMany(() => Item, (item) => item.owner)
+  @Field((type) => [ItemsList], { nullable: true })
+  items?: Item[];
 }
