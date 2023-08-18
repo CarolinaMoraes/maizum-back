@@ -21,7 +21,7 @@ type Item {
   todo: String!
   status: Float!
   createdAt: DateTime!
-  lastUpdate: DateTime!
+  updatedAt: DateTime!
 }
 
 type User {
@@ -38,13 +38,18 @@ type Query {
   findUserByEmail(email: String!): User!
   findUserLists(userId: String!): [ItemsList!]!
   findList(userId: String!, listId: String!): ItemsList!
+  findItemsByListId(ownerId: String!, listId: String): [Item!]!
 }
 
 type Mutation {
   createUser(userData: CreateUserInput!): User!
   updateUser(id: String!, userData: UpdateUserInput!): User!
   createList(createListData: CreateItemsListInput!): ItemsList!
-  updateList(listId: String!, updateListData: UpdateItemsListInput!, userId: String!): ItemsList!
+  updateList(listId: String!, userId: String!, updateListData: UpdateItemsListInput!): ItemsList!
+  removeList: Boolean!
+  createItem(itemData: CreateItemInput!): Item!
+  updateItem(ownerId: String!, itemId: String!, itemData: UpdateItemInput!): Item!
+  removeItem(ownerId: String!, itemId: String!): Boolean!
 }
 
 input CreateUserInput {
@@ -68,4 +73,17 @@ input CreateItemsListInput {
 input UpdateItemsListInput {
   name: String
   description: String
+}
+
+input CreateItemInput {
+  todo: String!
+  status: Float!
+  ownerId: String!
+  listId: String
+}
+
+input UpdateItemInput {
+  todo: String
+  status: Float
+  listId: String
 }

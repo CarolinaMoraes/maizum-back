@@ -44,16 +44,26 @@ export class ItemsListService {
     return foundList;
   }
 
-  async update(userId: string, listId: string, listData: UpdateItemsListInput) {
+  async update(
+    userId: string,
+    listId: string,
+    listData: UpdateItemsListInput,
+  ): Promise<ItemsList> {
     const foundList = await this.findList(userId, listId);
 
     if (!foundList) throw new NotFoundException('List not found');
 
-    const editedList = await this.itemsListRepository.save({
+    return await this.itemsListRepository.save({
       ...foundList,
       ...listData,
     });
+  }
 
-    return await this.itemsListRepository.save(editedList);
+  async remove(userId: string, listId: string): Promise<void> {
+    const foundList = await this.findList(userId, listId);
+
+    if (!foundList) throw new NotFoundException('List not found');
+
+    await this.itemsListRepository.remove(foundList);
   }
 }

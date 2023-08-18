@@ -31,7 +31,7 @@ export class Item {
 
   @Field()
   @UpdateDateColumn({ type: 'timestamptz' })
-  lastUpdate: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.items, {
     onDelete: 'CASCADE',
@@ -41,13 +41,13 @@ export class Item {
   @ManyToOne(() => ItemsList, (list) => list.items, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
+    nullable: true,
   })
   list?: ItemsList;
 }
 
-enum ItemStatus {
+export enum ItemStatus {
   Todo,
   InProgress,
   Done,
-  Canceled,
 }

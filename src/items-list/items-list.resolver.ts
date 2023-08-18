@@ -31,9 +31,15 @@ export class ItemsListResolver {
   @Mutation(() => ItemsList)
   async updateList(
     @Args('listId') listId: string,
-    @Args('updateListData') updateListData: UpdateItemsListInput,
     @Args('userId') userId: string,
+    @Args('updateListData') updateListData: UpdateItemsListInput,
   ): Promise<ItemsList> {
     return await this.itemsListService.update(userId, listId, updateListData);
+  }
+
+  @Mutation(() => Boolean)
+  async removeList(listId: string, userId: string): Promise<boolean> {
+    await this.itemsListService.remove(userId, listId);
+    return true;
   }
 }

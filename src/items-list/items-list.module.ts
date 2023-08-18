@@ -5,9 +5,11 @@ import { ItemsListService } from './items-list.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ItemsList } from './items-list.entity';
 import { Item } from './item.entity';
+import { ItemResolver } from './item.resolver';
+import { ItemService } from './item.service';
 
 @Module({
   imports: [UsersModule, TypeOrmModule.forFeature([ItemsList, Item])],
-  providers: [ItemsListResolver, ItemsListService],
+  providers: [ItemsListResolver, ItemsListService, ItemResolver, ItemService],
 })
 export class ItemsListModule {}
