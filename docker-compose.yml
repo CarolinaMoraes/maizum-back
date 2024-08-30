@@ -16,7 +16,7 @@ services:
     container_name: maizum_back
     build: .
     ports:
-      - ${API_PORT}:${API_PORT}
+      - '${API_PORT}:${API_PORT}'
     volumes:
       - .:/home/maizum-back
       - /home/maizum-back/node_modules
