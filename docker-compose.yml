@@ -12,6 +12,8 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    env_file:
+      - .env
   api:
     container_name: maizum_back
     build: .
@@ -19,7 +21,6 @@ services:
       - '${API_PORT}:${API_PORT}'
     volumes:
       - .:/home/maizum-back
-      - /home/maizum-back/node_modules
     depends_on:
       - database
     env_file:
