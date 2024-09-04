@@ -1,6 +1,6 @@
 import {
+  ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -34,17 +35,22 @@ export class UserService {
   }
 
   async create(userData: CreateUserDto): Promise<User> {
-    try {
-      const user = this.userRepository.create(userData);
-      const userSaved = await this.userRepository.save(user);
+    const foundUser = await this.userRepository.findOneBy({
+      email: userData.email,
+    });
 
-      return userSaved;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Something went wrong while saving the user',
-        error,
-      );
-    }
+    if (foundUser) throw new ConflictException('User already exists');
+
+    const hashedPassword: string = await argon2.hash(userData.password);
+
+    const user = this.userRepository.create({
+      ...userData,
+      password: hashedPassword,
+    });
+
+    const userSaved = await this.userRepository.save(user);
+
+    return userSaved;
   }
 
   async update(id: string, userData: UpdateUserDto): Promise<User> {
