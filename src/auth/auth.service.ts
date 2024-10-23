@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { RefreshTokenWrapper } from './entities/refreshTokenWrapper.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from './interfaces/jwtPayload.interface';
+import { isBefore } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +21,14 @@ export class AuthService {
     @InjectRepository(RefreshTokenWrapper)
     private refreshTokenRepository: Repository<RefreshTokenWrapper>,
   ) {}
+
+  private static defaultSignOptions: JwtSignOptions = {
+    issuer: process.env.JWT_ISSUER || 'maizum-back',
+    audience: process.env.JWT_AUDIENCE || 'maizum-client',
+  };
+
   /**
-   * @todo implement rate limiting for login attempts from the same IP and email
+   * @todo implement rate limiting for login attempts from the same user
    */
   async signIn(
     signInDto: SignInDto,
@@ -39,9 +46,8 @@ export class AuthService {
       throw new UnauthorizedException('The password is not valid');
 
     const signOptions: JwtSignOptions = {
-      issuer: process.env.JWT_ISSUER || 'maizum-back',
-      audience: process.env.JWT_AUDIENCE || 'maizum-client',
       subject: user.id,
+      ...AuthService.defaultSignOptions,
     };
 
     const access_token = this.jwtService.sign(
@@ -69,6 +75,44 @@ export class AuthService {
       isValid: false,
     });
   }
+  /**
+   * @todo implement rate limiting for access token refreshes from the same user
+   */
+  async refreshAccessToken(refreshToken: string): Promise<string> {
+    const refreshTokenWrapper = await this.refreshTokenRepository.findOne({
+      where: { refreshToken },
+    });
+
+    if (
+      !refreshTokenWrapper ||
+      !refreshTokenWrapper.isValid ||
+      isBefore(refreshTokenWrapper.expiresAt, new Date())
+    )
+      throw new UnauthorizedException();
+
+    const signOptions: JwtSignOptions = {
+      ...AuthService.defaultSignOptions,
+      subject: refreshTokenWrapper.userId,
+    };
+
+    const user = await this.userService.findUserById(
+      refreshTokenWrapper.userId,
+    );
+
+    if (!user)
+      throw new UnauthorizedException(
+        `User correspondent to token wasn't found`,
+      );
+
+    const access_token = this.jwtService.sign(
+      {
+        email: user.email,
+      },
+      signOptions,
+    );
+
+    return access_token;
+  }
 
   private async saveRefreshToken(userId: string): Promise<string> {
     const savedRefreshToken = await this.refreshTokenRepository.save({
@@ -79,7 +123,7 @@ export class AuthService {
     return savedRefreshToken.refreshToken;
   }
 
-  public async validateAccessToken(accessToken: string): Promise<JwtPayload> {
+  async validateAccessToken(accessToken: string): Promise<JwtPayload> {
     const payload = await this.jwtService.verifyAsync(accessToken, {
       secret: process.env.JWT_SECRET,
     });

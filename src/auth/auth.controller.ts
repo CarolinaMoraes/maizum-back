@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { SignInDto } from './dto/signIn.dto';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -25,5 +25,16 @@ export class AuthController {
   @Post('/logout')
   async logout(@Req() req: Request): Promise<void> {
     await this.authService.logout(req.cookies['refresh_token']);
+  }
+
+  @Public()
+  @Get('/refresh')
+  async refreshAccessToken(
+    @Req() req: Request,
+  ): Promise<{ access_token: string }> {
+    const access_token = await this.authService.refreshAccessToken(
+      req.cookies['refresh_token'],
+    );
+    return { access_token };
   }
 }
