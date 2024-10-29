@@ -1,0 +1,34 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Maizum</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #333; background-color:
+      #f4f4f4; padding: 20px; } h1 { color: #0073e6; margin-bottom: 30px; }
+      button { margin: 10px 0; display: inline-block; padding: 15px 30px; color:
+      #ffffff; background-color: #0073e6; border-radius: 4px; text-decoration:
+      none; border: none; } a { text-decoration: none; color: #fff; font-size:
+      0.85rem; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Welcome, {{name}}!</h1>
+      <div>
+        <p>
+          Thank you for signing up to our service. We're thrilled to have you
+          with us!
+        </p>
+        <p>Please confirm your email address by clicking the button below:</p>
+        <button><a href='{{confirmationLink}}'>Confirm email</a></button>
+      </div>
+
+      <p>
+        Best regards,
+        <br />
+        Maizum Company
+      </p>
+    </div>
+  </body>
+</html>

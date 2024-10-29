@@ -9,11 +9,16 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import * as argon2 from 'argon2';
+import { MailerService } from '@nestjs-modules/mailer';
+import { JwtService } from '@nestjs/jwt';
+import { sendEmail } from 'src/common/utils/mail.utils';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private mailerService: MailerService,
+    private jwtService: JwtService,
   ) {}
 
   async findUserById(userId: string): Promise<User> {
@@ -45,10 +50,28 @@ export class UserService {
 
     const user = this.userRepository.create({
       ...userData,
+      confirmed: false,
       password: hashedPassword,
     });
 
     const userSaved = await this.userRepository.save(user);
+
+    const confirmRegistrationToken = this.jwtService.sign(
+      { userId: userSaved.id },
+      { expiresIn: '1h' },
+    );
+
+    const confirmationLink = `${process.env.APP_URL}/confirmRegistration?=${confirmRegistrationToken}`;
+    sendEmail(
+      this.mailerService,
+      userSaved.email,
+      'Welcome to Maizum!',
+      'confirmRegistration',
+      {
+        name: userSaved.firstname,
+        confirmationLink,
+      },
+    );
 
     return userSaved;
   }
