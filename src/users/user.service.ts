@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -28,6 +29,8 @@ export class UserService {
 
     if (!user) throw new NotFoundException('User not found');
 
+    if (!user.confirmed) throw new UnauthorizedException();
+
     return user;
   }
 
@@ -35,6 +38,8 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) throw new NotFoundException('User not found');
+
+    if (!user.confirmed) throw new UnauthorizedException();
 
     return user;
   }
