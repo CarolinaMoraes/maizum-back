@@ -14,6 +14,7 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('users')
 export class UserController {
@@ -24,33 +25,51 @@ export class UserController {
 
   @Public()
   @Get('/confirm-email')
-  confirmRegistration(@Query('token') token: string): Promise<User> {
+  async confirmRegistration(@Query('token') token: string): Promise<User> {
     try {
       const payload: { userId: string; iat: number; exp: number } =
         this.jwtService.verify(token);
 
-      return this.userService.update(payload.userId, { confirmed: true });
+      const user = await this.userService.update(payload.userId, {
+        confirmed: true,
+      });
+
+      // Use class-transform.plainToInstance() to make sure we are not returning any properties
+      // annotated with @Exclude
+      return plainToInstance(User, user);
     } catch (error) {
       throw new BadRequestException('Invalid or expired token');
     }
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.userService.update(id, updateUserDto);
+    const user = await this.userService.update(id, updateUserDto);
+
+    // Use class-transform.plainToInstance() to make sure we are not returning any properties
+    // annotated with @Exclude
+    return plainToInstance(User, user);
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string): Promise<User> {
-    return this.userService.findUserById(id);
+  async getUser(@Param('id') id: string): Promise<User> {
+    const user = await this.userService.findUserById(id);
+
+    // Use class-transform.plainToInstance() to make sure we are not returning any properties
+    // annotated with @Exclude
+    return plainToInstance(User, user);
   }
 
   @Public()
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    const user = await this.userService.create(createUserDto);
+
+    // Use class-transform.plainToInstance() to make sure we are not returning any properties
+    // annotated with @Exclude
+    return plainToInstance(User, user);
   }
 }
