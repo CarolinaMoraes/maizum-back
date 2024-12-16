@@ -1,18 +1,18 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import * as argon2 from 'argon2';
+import { sendEmail } from 'src/common/utils/mail.utils';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import * as argon2 from 'argon2';
-import { MailerService } from '@nestjs-modules/mailer';
-import { JwtService } from '@nestjs/jwt';
-import { sendEmail } from 'src/common/utils/mail.utils';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -85,6 +85,9 @@ export class UserService {
     const originalUser = await this.findUserById(id);
 
     await this.userRepository.update(id, userData);
-    return this.userRepository.create({ ...originalUser, ...userData });
+    return this.userRepository.create({
+      ...originalUser,
+      ...userData,
+    });
   }
 }
