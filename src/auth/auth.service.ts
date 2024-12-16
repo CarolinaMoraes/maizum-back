@@ -10,7 +10,7 @@ import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 import { RefreshTokenWrapper } from './entities/refreshTokenWrapper.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtPayload } from './interfaces/jwtPayload.interface';
+import { JwtCustomPayload } from './interfaces/jwtCustomPayload.interface';
 import { isBefore } from 'date-fns';
 
 @Injectable()
@@ -123,7 +123,7 @@ export class AuthService {
     return savedRefreshToken.refreshToken;
   }
 
-  async validateAccessToken(accessToken: string): Promise<JwtPayload> {
+  async validateAccessToken(accessToken: string): Promise<JwtCustomPayload> {
     const payload = await this.jwtService.verifyAsync(accessToken, {
       secret: process.env.JWT_SECRET,
     });

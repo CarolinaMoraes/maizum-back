@@ -4,11 +4,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
-import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/common/decorators/public.decorator';
 import { UserService } from 'src/users/user.service';
+import { AuthService } from '../auth.service';
+import { JwtCustomPayload } from '../interfaces/jwtCustomPayload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,9 +31,10 @@ export class AuthGuard implements CanActivate {
       if (!token) throw new UnauthorizedException('No Bearer token provided');
 
       try {
-        const payload = await this.authService.validateAccessToken(token);
+        const payload: JwtCustomPayload =
+          await this.authService.validateAccessToken(token);
 
-        request['user'] = await this.userService.findUserById(payload.subject);
+        request['user'] = await this.userService.findUserById(payload.sub);
       } catch (error) {
         throw new UnauthorizedException();
       }
