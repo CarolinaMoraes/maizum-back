@@ -1,47 +1,14 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { Public } from 'src/common/decorators/public.decorator';
 import { CreateUserDto } from 'src/users/dto/createUser.dto';
 import { UserService } from 'src/users/user.service';
-import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { Public } from 'src/common/decorators/public.decorator';
-import { JwtService } from '@nestjs/jwt';
-import { plainToInstance } from 'class-transformer';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
-  ) {}
-
-  @Public()
-  @Get('/confirm-email')
-  async confirmRegistration(@Query('token') token: string): Promise<User> {
-    try {
-      const payload: { userId: string; iat: number; exp: number } =
-        this.jwtService.verify(token);
-
-      const user = await this.userService.update(payload.userId, {
-        confirmed: true,
-      });
-
-      // Use class-transform.plainToInstance() to make sure we are not returning any properties
-      // annotated with @Exclude
-      return plainToInstance(User, user);
-    } catch (error) {
-      throw new BadRequestException('Invalid or expired token');
-    }
-  }
-
+  constructor(private userService: UserService) {}
   @Patch(':id')
   async update(
     @Param('id') id: string,

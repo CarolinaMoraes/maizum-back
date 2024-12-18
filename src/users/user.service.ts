@@ -22,14 +22,18 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async findUserById(userId: string): Promise<User> {
+  async findUserById(
+    userId: string,
+    userIsBeingConfirmedNow: boolean = false,
+  ): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (!user.confirmed) throw new UnauthorizedException();
+    if (!user.confirmed && !userIsBeingConfirmedNow)
+      throw new UnauthorizedException();
 
     return user;
   }
@@ -63,10 +67,10 @@ export class UserService {
 
     const confirmRegistrationToken = this.jwtService.sign(
       { userId: userSaved.id },
-      { expiresIn: '1h' },
+      { expiresIn: '24h' },
     );
 
-    const confirmationLink = `${process.env.APP_URL}/confirmRegistration?=${confirmRegistrationToken}`;
+    const confirmationLink = `${process.env.APP_URL}/register/confirm?token=${confirmRegistrationToken}`;
     sendEmail(
       this.mailerService,
       userSaved.email,
@@ -82,7 +86,7 @@ export class UserService {
   }
 
   async update(id: string, userData: UpdateUserDto): Promise<User> {
-    const originalUser = await this.findUserById(id);
+    const originalUser = await this.findUserById(id, userData.confirmed);
 
     await this.userRepository.update(id, userData);
     return this.userRepository.create({

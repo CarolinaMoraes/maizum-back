@@ -62,6 +62,30 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
+  async signInSimplified(
+    email: string,
+  ): Promise<{ access_token: string; refresh_token: string }> {
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) throw new NotFoundException('There is no user with this email');
+
+    const signOptions: JwtSignOptions = {
+      subject: user.id,
+      ...AuthService.defaultSignOptions,
+    };
+
+    const access_token = this.jwtService.sign(
+      {
+        email,
+      },
+      signOptions,
+    );
+
+    const refresh_token = await this.saveRefreshToken(user.id);
+
+    return { access_token, refresh_token };
+  }
+
   async logout(refreshToken: string): Promise<void> {
     const refreshTokenWrapper = await this.refreshTokenRepository.findOne({
       where: { refreshToken },
