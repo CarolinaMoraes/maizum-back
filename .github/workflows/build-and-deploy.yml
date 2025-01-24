@@ -35,9 +35,9 @@ jobs:
 
       - name: Upload to S3
         working-directory: .
-        run: | 
-        aws s3 sync ./dist s3://${{ env.s3bucket }}/${{ env.codedeployname }}/ --delete
-        aws s3 cp ./.appspec.yml s3://${{ env.s3bucket }}/${{ env.codedeployname }}/
+        run: |
+          aws s3 sync ./dist s3://${{ env.s3bucket }}/${{ env.codedeployname }}/ --delete
+          aws s3 cp ./.appspec.yml s3://${{ env.s3bucket }}/${{ env.codedeployname }}/
 
       - name: Run CodeDeploy deployment
         run: |
