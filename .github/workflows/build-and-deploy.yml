@@ -8,6 +8,7 @@ on:
 env:
   reponame: maizum-back
   codedeployname: maizum-back
+  codedeploygroupname: maizum-depl-grp
   s3bucket: codedeploy-maizum-bucket
 
 jobs:
@@ -38,4 +39,4 @@ jobs:
 
       - name: Run CodeDeploy deployment
         run: |
-          aws deploy create-deployment --application-name ${{ env.codedeployname }} --deployment-group-name ${{ env.codedeployname }} --deployment-config-name CodeDeployDefault.OneAtATime --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+          aws deploy create-deployment --application-name ${{ env.codedeployname }} --deployment-group-name ${{ env.codedeploygroupname }} --deployment-config-name CodeDeployDefault.OneAtATime --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

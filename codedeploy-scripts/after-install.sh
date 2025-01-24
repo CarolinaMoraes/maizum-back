@@ -4,7 +4,7 @@
 reponame=maizum-back
 repodir=/var/www/${reponame}
 webdir=/srv/www/maizum-back
-codedeployname=maizum-back
+codedeploygroupname=maizum-depl-grp
 s3bucket=codedeploy-maizum-bucket
 
 # Set permissions
