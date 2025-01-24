@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/maizum-back
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStop:
+    - location: codedeploy-scripts/application-stop.sh
+      timeout: 300
+      runas: ec2-user
+  AfterInstall:
+    - location: codedeploy-scripts/after-install.sh
+      timeout: 300
+      runas: ec2-user
+  ApplicationStart:
+    - location: codedeploy-scripts/application-start.sh
+      timeout: 300
+      runas: ec2-user
