@@ -1,0 +1,10 @@
+node_modules/
+*.log
+test/
+.env
+.env.example
+.eslintrc.js
+.gitignore
+.prettierrc
+.editorconfig
+*.sh

@@ -29,3 +29,4 @@ jobs:
           remote_host: '${{ secrets.SSH_REMOTE_HOST }}'
           remote_user: ec2-user
           remote_key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          args: --exclude-from='rsync-excludes.txt'
