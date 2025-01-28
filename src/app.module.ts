@@ -7,6 +7,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import * as aws from '@aws-sdk/client-ses';
 import { join } from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [

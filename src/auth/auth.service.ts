@@ -12,6 +12,9 @@ import { RefreshTokenWrapper } from './entities/refreshTokenWrapper.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtCustomPayload } from './interfaces/jwtCustomPayload.interface';
 import { isBefore } from 'date-fns';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Injectable()
 export class AuthService {
