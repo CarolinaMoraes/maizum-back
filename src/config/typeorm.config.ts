@@ -21,6 +21,11 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
       ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     };
   }
 }
